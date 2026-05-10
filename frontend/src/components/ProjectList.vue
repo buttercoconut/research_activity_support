@@ -1,45 +1,58 @@
 <template>
-  <div class="project-list">
-    <h2>연구 프로젝트 목록</h2>
+  <div>
+    <h2>Project List</h2>
     <ul>
       <li v-for="project in projects" :key="project.id">
-        <router-link :to="{ name: 'ProjectView', params: { id: project.id } }">
-          {{ project.title }} ({{ project.start_date }} ~ {{ project.end_date }})
-        </router-link>
+        <strong>{{ project.title }}</strong> (PI ID: {{ project.pi_id }})
+        <p>{{ project.description }}</p>
+        <small>Budget: {{ project.budget }} | Start: {{ formatDate(project.start_date) }}</small>
       </li>
     </ul>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
-const projects = ref([])
+interface Project {
+  id: number;
+  title: string;
+  description?: string;
+  start_date: string;
+  end_date?: string;
+  pi_id: number;
+  budget: number;
+}
+
+const projects = ref<Project[]>([]);
 
 const fetchProjects = async () => {
   try {
-    const response = await axios.get('/api/projects')
-    projects.value = response.data
-  } catch (error) {
-    console.error('프로젝트 목록 가져오기 실패', error)
+    const response = await axios.get<Project[]>('http://localhost:8000/projects/');
+    projects.value = response.data;
+  } catch (err) {
+    console.error(err);
   }
-}
+};
+
+const formatDate = (dateStr: string) => {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString();
+};
 
 onMounted(() => {
-  fetchProjects()
-})
+  fetchProjects();
+});
 </script>
 
 <style scoped>
-.project-list {
-  padding: 1rem;
-}
-.project-list ul {
+ul {
   list-style: none;
   padding: 0;
 }
-.project-list li {
-  margin-bottom: 0.5rem;
+li {
+  border-bottom: 1px solid #ccc;
+  padding: 8px 0;
 }
 </style>
