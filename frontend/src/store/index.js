@@ -1,8 +1,12 @@
-import { createStore } from 'vuex'
+import { defineStore } from 'pinia'
 
-export default createStore({
-  state: {},
-  mutations: {},
-  actions: {},
-  modules: {},
+export const useProjectStore = defineStore('project', {
+  state: () => ({
+    projects: []
+  }),
+  actions: {
+    setProjects(projects) {
+      this.projects = projects
+    }
+  }
 })
